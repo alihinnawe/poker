@@ -16,7 +16,18 @@
 		<script type="module" async="true" src="script/authentication-tab-controller.js"></script>
 		<script type="module" async="true" src="script/preferences-tab-controller.js"></script>
 		<script type="module" async="true" src="script/poker-tab-controller.js"></script>
-
+		
+		<template class="poker-table-view">
+			<section class="poker-table-view">
+			
+				<div class="data"></div>
+				
+				<div class="control">
+					<button type="button" class="quit">quit</button>
+				</div>				
+			</section>
+		</template>
+		
 		<template class="authentication">
 			<section class="authentication">
 				<fieldset class="credentials">
@@ -41,7 +52,7 @@
 				<div class="avatar">
 					<label>Avatar</label>
 					<button type="button">
-						<img ondragover="event.preventDefault()" ondrop="event.preventDefault()" />
+						<img ondragover="event.preventDefault()" ondrop="event.preventDefault()" width = "50px" height = "50px"/>
 					</button>
 					<input type="file" class="hidden" accept="image/*" />
 				</div>
@@ -152,12 +163,11 @@
 
 		<template class="poker-tables-view-row">
 			<tr>
-				<td class = "table"><button type="button"><img width="50px" height= "50px" /></button></td>
+				<td class = "table"><button type="button"><img ondragover="event.preventDefault()" ondrop="event.preventDefault()" button></td>
 				<td class = "alias text"></td>
 				<td class = "variant text"></td>
 			</tr>
-		</template>
-		
+		</template>	
 		
 	</head>
 
