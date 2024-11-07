@@ -17,6 +17,8 @@ class PokerTabController extends TabController {
 
 
 	// HTML element getter operations
+	get sessionOwner () { return this.sharedProperties["session-owner"]; }
+
 	get tablesViewRowTemplate () { return document.querySelector("head>template.poker-tables-view"); } 
 	get viewsTableRowTemplate() {return document.querySelector("head>template.poker-tables-view-row"); }
 	get tablesViewSection () { return this.center.querySelector("section.poker-tables-view"); }
@@ -35,15 +37,14 @@ class PokerTabController extends TabController {
 	 */
 	async processActivated () {
 		this.messageOutput.value = "";
-		const sessionOwner = this.sharedProperties["session-owner"];
 		// redefine center content
 		const template = document.querySelector("head>template.poker-tables-view");
 		while (this.center.lastElementChild) this.center.lastElementChild.remove();
 		this.center.append(template.content.firstElementChild.cloneNode(true));
 
-		await this.#displayAllPokerTables(sessionOwner);
+		await this.#displayAllPokerTables();
 		this.insertNewPokerGame.addEventListener("click", event => this.processSaveTable());
-		if (sessionOwner.group === "ADMIN") {
+		if (this.sessionOwner.group !== "USER") {
 
 		}
 		// register basic event listeners
@@ -95,7 +96,7 @@ class PokerTabController extends TabController {
 	}
 	
 	
-	async #displayAllPokerTables (sessionOwner) {
+	async #displayAllPokerTables () {
 		try {	
 			const tables = await this.#invokeQueryAllPokerTables();
 			this.tablesViewViewsTableBody.innerHTML = "";
@@ -105,17 +106,17 @@ class PokerTabController extends TabController {
 				this.tablesViewViewsTableBody.append(tableRow);	
 				
 				const accessButton = tableRow.querySelector("td.table>button");
+				accessButton.addEventListener("click", event => this.processDisplayTableEditor(table));
 				accessButton.querySelector("img").src = this.sharedProperties["service-origin"] + "/services/documents/" + table.avatar.identity;
-				if (sessionOwner.group === "ADMIN") {
+				if (this.sessionOwner.group === "ADMIN") {
 					accessButton.addEventListener("dragover", event => this.validateImageTransfer(event.dataTransfer));
 					accessButton.addEventListener("drop", event => this.processSubmitTableAvatar(table, event.dataTransfer.files[0], accessButton));
-
 				}
-				
 
 				console.log("table is",table);
 				tableRow.querySelector("td.variant").innerText = table.variant.alias || "";
-				
+
+				table.seats.sort( (left,right) => left.position - right.position);
 				for ( const seat of table.seats) {
 					const td = document.createElement("td");
 					td.classList.add("seat");
@@ -123,18 +124,19 @@ class PokerTabController extends TabController {
 
 					button.addEventListener("click", event => this.processDisplayTableEditor(table, seat));
 					const img = document.createElement("img");
-					img.src = "./image/seat/seat-available.png";
+					!seat.occupant ? img.src = "image/seat/seat-available.png" : img.src = "image/seat/seat-unavailable.png";
 					img.setAttribute("width","50px");
 					img.setAttribute("height","50px");
 					button.append(img);
 					td.append(button);
 					tableRow.append(td);
+					
 				}
 				
 				this.messageOutput.value = "";
 			}
 			
-			if (sessionOwner.group === "ADMIN") {
+			if (this.sessionOwner.group !== "USER") {
 				const tableOverviewControl = this.tablesViewSection.querySelector("div.main>div.control");
 				tableOverviewControl.classList.remove("hidden");
 				
@@ -154,14 +156,17 @@ class PokerTabController extends TabController {
 	}
 	
 	
-	async processDisplayTableEditor (table, seat) {
-		console.log("table seat number", table, seat.identity);
+	async processDisplayTableEditor (table, seat = null) {
+		console.log("table seat number", table, seat.identity, this.sessionOwner);
+		
+		if (this.sessionOwner.group === "USER") 
+			await this.#occupySeat(table, seat);
 		
 		this.tablesViewSection.classList.add("hidden");
 		const template = document.querySelector("head>template.poker-table-view");
 		while (this.center.lastElementChild) this.center.lastElementChild.remove();
 		this.center.append(template.content.firstElementChild.cloneNode(true));
-
+        table.seats.sort( (left,right) => left.position - right.position);
 		for (const tableSeat of table.seats) {
 			const span = document.createElement("span");
 			this.tableViewDataDivision.append(span);	
@@ -173,10 +178,41 @@ class PokerTabController extends TabController {
 			const avatarViewer = document.createElement("img");
 			span.append(avatarViewer);
 			avatarViewer.classList.add("avatar");
-			avatarViewer.src = "image/seat/seat-available.png";
+			
 			avatarViewer.setAttribute("width", "50px");
 			avatarViewer.setAttribute("height", "50px");
+			if (tableSeat.occupant && tableSeat.identity) {
+				avatarViewer.src = "image/seat/seat-unavailable.png";
+		
+			} else {
+				avatarViewer.src = "image/seat/seat-available.png";
+			}
+			//this.invokeInsertOrUpdateTable(table);
+			
 		}
+	}
+	
+	async #occupySeat (table, seat = null) {
+		if (seat && table.identity !== seat.tableReference) throw new RangeError();
+		if (seat && seat.occupant && seat.occupant.identity !== this.sessionOwner.identity) throw new RangeError();
+		if (!seat && table.seats.every(tableSeat => !!tableSeat.occupant)) throw new RangeError("All seats are occupied!");
+		if (seat && seat.occupant && seat.occupant.identity === this.sessionOwner.identity) return;
+	
+		if (!seat) seat = table.seats.find(tableSeat => !tableSeat.occupant);
+		if (!seat) throw new Error("assertion failed!"); 
+		
+		await this.#invokeOccupySeat(seat);
+	}
+
+
+	async #invokeOccupySeat (seat = null) {
+		const headers = { "Accept": "text/plain", "Content-Type": "text/plain"};
+		const resource = this.sharedProperties["service-origin"] + "/services/people/" + this.sessionOwner.identity;
+		const body = seat ? seat.identity.toString() : "0";
+
+		const response = await fetch(resource, { method: "PATCH" , headers: headers, body: body, credentials: "include" });
+		if (!response.ok) throw new Error("HTTP " + response.status + " " + response.statusText);
+		return window.parseInt(await response.text());
 	}
 	
 	
