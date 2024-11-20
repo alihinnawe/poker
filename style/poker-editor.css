@@ -1,0 +1,268 @@
+body>main>article.center {
+	section.poker-tables-view {
+		div.main>div.tables {
+			height: 10rem;
+			width: 40rem;
+			overflow-y: scroll;
+			padding-right: 1rem;
+
+			table {
+				thead>tr {
+					border-bottom-style: solid;
+					border-bottom-width: 1px;
+				}
+
+				th:not(:first-of-type),td:not(:first-of-type) {
+					border-left-style: solid;
+					border-left-width: 1px;
+				}
+
+				th {
+					padding: 0.5rem;
+					background: var(--corporate-thead-bgcolor);
+					position: sticky;
+					top: 0;
+				}
+
+				td {
+					padding: 0 0.5rem;
+				}
+
+				td.number {
+					text-align: right;
+				}
+
+				td.table>button>img {
+					height: 3rem;
+					width: 3rem;
+				}
+				
+				td.seat>button>img {
+					height: 3rem;
+					width: 3rem;	
+				}
+			}
+		}
+	}
+	
+	section.poker-table-view {
+		div.table {
+			height: 380px;
+			width: 800px;
+			color: red;		
+			background-image: url("../image/table/poker-table.png");
+			background-repeat: no-repeat;	
+
+			span.seat,span.hand {
+				position: relative;
+
+				img.avatar {
+					height: 30px;
+					width: 30px;
+				}
+			}
+
+			span.seat {
+				height: 30px;
+				width: 100px;
+			}
+
+			span.hand {
+				img.card {
+					height: 50px;
+					width: 40px;
+				}	
+			}
+
+			span.hand.community {			
+				height: 50px;
+				width: 200px;
+				top: 75px;
+				left: 290px;
+			}
+
+			span.hand.player {
+				height: 80px;
+				width: 120px;
+
+				span.player {
+					img.avatar {
+						vertical-align: middle;
+					}
+
+					output.name {
+						vertical-align: middle;
+						color: white;
+					}
+				}
+
+				span.card {
+					img.card {
+						position: relative;	
+					}
+
+					img.card.selected {
+						opacity: 0.5;	
+					}
+
+					img.card:nth-of-type(1) {
+						top: 0px;	
+						left: 0px;	
+					}
+
+					img.card:nth-of-type(2) {
+						top: 0px;	
+						left: -20px;	
+					}
+
+					img.card:nth-of-type(3) {
+						top: 0px;	
+						left: -40px;	
+					}
+
+					img.card:nth-of-type(4) {
+						top: -54px;	
+						left: 60px;	
+					}
+					
+					img.card:nth-of-type(5) {
+						top: -54px;	
+						left: 40px;	
+					}
+				}
+			}
+
+			span.hand.player.active {
+				border: 2px solid yellow;
+			}
+
+			span.hand.p20 {			
+				top: 140px;
+				left: -190px;
+			}
+
+			span.hand.p21 {
+				top: 140px;
+				left: 320px;
+			}
+			
+			span.seat.p20 {			
+				top: 165px;
+				left:  10px;
+			}
+
+			span.seat.p21 {
+				top: 165px;
+				left: 620px;
+			}
+
+			span.p30 {
+				top: 315px;
+				left: 10px;	
+			}
+			span.p31 {
+				top: 15px;
+				left: 240px;
+			}
+			span.p32 {
+				top: 315px;
+				left: 460px;
+			}
+
+			span.p40 {
+				top: 310px;
+				left: 20px;
+			}
+			span.p41 {
+				top: 15px;
+				left: -10px;
+			}
+			span.p42 {
+				top: 15px;
+				left: 460px;
+			}
+			span.p43 {
+				top: 310px;
+				left: 400px;
+			}
+			span.p50 {
+				top: 315px;
+				left: 10px;
+			}
+			span.p51 {
+				top: 165px;
+				left: -95px;
+			}
+			span.p52 {
+				top: 15px;
+				left: 170px;
+			}
+			span.p53 {
+				top: 165px;
+				left: 430px;
+			}
+			span.p54 {
+				top: 300px;
+				left: 320px;
+			}
+			span.p60 {
+				top:315px;
+				left:10px;
+			}
+			span.p61 {
+				top: 165px;
+				left: -100px;
+			}
+			span.p62 {
+				top: 15px;
+				left: -190px;
+			}
+			span.p63 {
+				top: 15px;
+				left: 460px;
+			}
+			span.p64 {
+				top: 165px;
+				left: 360px;
+			}
+			span.p65 {
+				top: 315px;
+				left: 260px;
+			}
+			span.p70 {
+				top: 315px;
+				left: 10px;
+			}
+			span.p71 {
+				top: 165px;
+				left: -100px;
+			}
+			span.p72 {
+				top: 15px;
+				left: -180px;
+			}
+			span.p73 {
+				top: 15px;
+				left: 60px;
+			}
+			span.p74 {
+				top: 15px;
+				left: 300px;
+			}
+			span.p75 {
+				top: 165px;
+				left: 230px;
+			}
+			span.p76 {
+				top: 315px;
+				left: 120px;
+			}
+			
+			
+		}
+
+		div.control {
+			background-color: red;
+		}
+	}
+}

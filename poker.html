@@ -1,0 +1,227 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="author" content="Sascha Baumeister" />
+		<meta name="dcterms.rightsHolder" content="Sascha Baumeister" />
+		<meta name="dcterms.rights" content="all rights reserved" />
+		<meta name="dcterms.dateCopyrighted" content="2018" />
+
+		<title>Poker-App</title>
+		<link type="image/png" rel="icon" href="image/poker.jpg" />
+		<link type="text/css" rel="stylesheet" href="style/general.css" />
+		<link type="text/css" rel="stylesheet" href="style/authentication.css" />
+		<link type="text/css" rel="stylesheet" href="style/preferences.css" />
+		<link type="text/css" rel="stylesheet" href="style/poker-editor.css" />
+		<script type="module" async="true" src="script/authentication-tab-controller.js"></script>
+		<script type="module" async="true" src="script/preferences-tab-controller.js"></script>
+		<script type="module" async="true" src="script/poker-tab-controller.js"></script>
+		
+		<template class="authentication">
+			<section class="authentication">
+				<fieldset class="credentials">
+					<legend>Authentifizierung</legend>
+					<div class="email">
+						<label>Email</label>
+						<input type="email" />
+					</div>
+					<div class="password">
+						<label>Passwort</label>
+						<input type="password" />
+					</div>
+					<div class="control">
+						<button type="button" class="authenticate">login</button>
+					</div>
+				</fieldset>
+			</section>
+		</template>
+
+		<template class="preferences">
+			<section class="preferences">
+				<div class="avatar">
+					<label>Avatar</label>
+					<button type="button">
+						<img ondragover="event.preventDefault()" ondrop="event.preventDefault()" />
+					</button>
+					<input type="file" class="hidden" accept="image/*" />
+				</div>
+				<div class="credentials">
+					<div class="email">
+						<label>Email</label>
+						<input type="email" />
+					</div>
+					<div class="password">
+						<label>Passwort</label>
+						<input type="password" />
+					</div>
+					<div class="credit">
+						<label>Kredit</label>
+						<input type="text" readonly="true" />
+					</div>
+					<div class="group">
+						<label>Gruppe</label>
+						<select autocomplete="off">
+							<option value="USER">Benutzer</option>
+							<option value="CROUPIER">Croupier</option>
+							<option value="ADMIN">Administrator</option>
+						</select>
+					</div>
+				</div>
+				<div class="personal">
+					<span class="name">
+						<div class="title">
+							<label>Titel</label>
+							<input type="text" />
+						</div>
+						<div class="surname">
+							<label>Nachname</label>
+							<input type="text" />
+						</div>
+						<div class="forename">
+							<label>Vorname</label>
+							<input type="text" />
+						</div>
+					</span>
+					<span class="address">
+						<div class="postcode">
+							<label>PLZ</label>
+							<input type="text" />
+						</div>
+						<div class="street">
+							<label>Straße</label>
+							<input type="text" />
+						</div>
+						<div class="city">
+							<label>Ort</label>
+							<input type="text" />
+						</div>
+						<div class="country">
+							<label>Staat</label>
+							<input type="text" />
+						</div>
+					</span>
+				</div>
+				<fieldset class="phones">
+					<legend>Telefon</legend>
+					<span></span>
+					<button type="button" class="add">hinzufügen</button>
+				</fieldset>
+				<div class="control">
+					<button type="button" class="submit">speichern</button>
+				</div>
+			</section>
+		</template>
+
+		<template class="poker-tables-view">
+			<section class="poker-tables-view">
+				<div class="main">
+					<h1>Pokertische</h1>
+					<div class="tables">
+						<table>
+							<tbody></tbody>
+						</table>
+					</div>
+				</div>
+				<div class="control hidden">
+					<div>
+						<label>Name</label>
+						<input type="text" class="alias" />
+					</div>
+					<div>
+						<label>Variante</label>	
+						<select class="variant"></select>
+					</div>
+					<div>
+						<label>Sitzanzahl</label>
+						<input type="number" class="seat-count" value="2" min="1" max="7" />
+					</div>
+					<div>
+						<label>Mindestgebot (€)</label>
+						<input type="number" class="entry-bid" value="0" min="0"  />
+					</div>
+					<button type="button" class="create">neu</button>
+				</div>
+			</section>
+		</template>
+		
+		<template class="poker-tables-view-row">
+			<tr>
+				<td class="table">
+					<button type="button"><img ondragover="event.preventDefault()" ondrop="event.preventDefault()" /></button>	
+				</td>
+				<td class="alias"></td>
+				<td class="variant"></td>
+				<!-- <td class="seat"><button type="button"><img /></button></td> -->
+			</tr>
+		</template>
+		
+		<template class="poker-table-view">
+			<section class="poker-table-view">
+				<div class="table">
+				</div>
+				<div class="status">
+					<label>Kartendesign:</label>
+					<select class="design">
+						<option value="image\deck\french\">Französisch</option>
+						<option value="image\deck\english\">Englisch</option>
+						<option value="image\deck\saxonian\">Sächsisch</option>
+					</select>
+					<label>Spielphase:</label>
+					<output class="phase"></output>
+					<label>Maximalgebot:</label>
+					<output class="max-bid"></output>
+					<label>Pot:</label>
+					<output class="pot"></output>
+					<label>Kredit:</label>
+					<output class="credit"></output>
+				</div>
+				<div class="control">
+					<button type="button" class="quit">verlassen</button>
+					<button type="button" class="start">start</button>
+					<input type="number" class="bid-increment" value="0" min="0" />
+					<button type="button" class="bet">bieten</button>
+					<button type="button" class="fold">aufgeben</button>
+					<button type="button" class="draw">tauschen</button>
+				</div>
+			</section>	
+		</template>
+
+		<template class="table-view-player-hand">
+			<span class="hand player">
+				<span class="player">
+					<img class="avatar" />
+					<output class="name"></output>
+				</span>
+				<span class="card"></span>
+			</span>
+		</template>
+		
+		<template class="table-view-community-hand">
+			<span class="hand community">
+				<span class="card"></span>
+			</span>
+		</template>
+	</head>
+
+	<body>
+		<header>
+			<nav class="tabs">
+				<button type="button" class="authentication">Login</button>
+				<button type="button" class="preferences">Einstellungen</button>
+				<button type="button" class="poker">Poker</button>
+			</nav>
+			<img class="logo" src="image/logo.png" />
+		</header>
+
+		<main>
+			<article class="left hidden"></article>
+			<article class="center"></article>
+			<article class="right hidden"></article>
+		</main>
+
+		<footer>
+			<label>Nachricht</label>
+			<input type="text" class="message" readonly="true" />
+		</footer>
+	</body>
+</html>
