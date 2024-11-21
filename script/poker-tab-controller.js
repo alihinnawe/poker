@@ -27,7 +27,7 @@ class PokerTabController extends TabController {
 	get pokerTableViewRowTemplate () { return document.querySelector("head>template.poker-tables-view-row"); }
 	get pokerTablesSection () { return this.center.querySelector("section.poker-tables-view"); }
 	get pokerTablesName () {return this.pokerTablesSection.querySelector("div.control>div>input.alias");}
-	get pokerTablesVariant () {return this.pokerTablesSection.querySelector("div.control>div>select.variant");}
+	get pokerTablesVariantSelector () {return this.pokerTablesSection.querySelector("div.control>div>select.variant");}
 	get pokerTablesSeatCount () {return this.pokerTablesSection.querySelector("div.control>div>input.seat-count");}
 	get pokerTablesEntryBid () {return this.pokerTablesSection.querySelector("div.control>div>input.entry-bid");}
 	get pokerTableDivControl () {return this.pokerTablesSection.querySelector("div.control");}
@@ -80,7 +80,7 @@ class PokerTabController extends TabController {
 					const option = document.createElement("option");
 					option.innerText = gameVariant.alias;
 					option.value = gameVariant.identity.toString();
-					this.pokerTablesVariant.append(option);
+					this.pokerTablesVariantSelector.append(option);
 				}
 
 				// register basic event listeners
@@ -102,17 +102,18 @@ class PokerTabController extends TabController {
 	}
 
 
+	// for create & modification!
 	async processSubmitTable (table = {}) {
 		try {
-			table.alias = this.pokerTablesName.value.trim() || null;
-			table.entryBid = window.parseInt(this.pokerTablesEntryBid.value ||"0");
 			if (!table.variant) table.variant = {};
 			if (!table.avatar) table.avatar = { identity: 1 };
 			if (!table.seats) table.seats = [];
+			table.alias = this.pokerTablesName.value.trim() || null;
+			table.entryBid = window.parseFloat(this.pokerTablesEntryBid.value || "0") * 100;
+			table.variant.identity = window.parseInt(this.pokerTablesVariantSelector.value);
 
-			table.variant.identity = window.parseInt(this.pokerTablesVariant.value);
 			const seatCount = window.parseInt(this.pokerTablesSeatCount.value);
-			if (table.seats.length > seatCount) table.seats.length = seatCount;
+			if (table.seats.length > seatCount) table.seats.length = seatCount;			// for modification!
 			for (let position = table.seats.length; position < seatCount; ++position)
 				table.seats.push({ position: position });
 
@@ -414,6 +415,7 @@ class PokerTabController extends TabController {
 
 			const table = await this.#invokeQueryTable(this.sessionOwner.tableReference);
 			const minCredits = 2 * table.entryBid;
+			//??????????????????????????????????????????????????????????????????????????????????????????????1
 			const players = table.seats.map(seat => seat.occupant).filter(person => person && person.credit >= minCredits);
 			if (players.length < table.variant.minPlayerCount) throw new Error("Es gibt zu wenige Spieler!");
 
@@ -472,30 +474,33 @@ class PokerTabController extends TabController {
 
 
 	//===============================================================
-		
+
+	/**
+	 * 
+	 */
 	async processExchangeCards () {
 		try {
 			const table = await this.#invokeQueryTable(this.sessionOwner.tableReference);
 			const game = await this.#invokeQueryGame(table.currentGameReference);
 			const sessionOwnerHand = game.hands.find(hand => hand.type === "PLAYER" && hand.playerReference === this.sessionOwner.identity);
 			const playerHands = game.hands.filter(hand => hand.type === "PLAYER");
-			
+
 			const positionStyleClass = "p" + playerHands.length + sessionOwnerHand.position;
-			const span = this.pokerTableDiv.querySelector("span.hand." + positionStyleClass);
-			const cardImageViewers = Array.from(span.querySelectorAll("img.card"));
-			const visibleCards = await this.#invokeQueryCards(sessionOwnerHand.identity);
+			const sessionOwnerHandSpan = this.pokerTableDiv.querySelector("span.hand." + positionStyleClass);
+			const sessionOwnerCardViewers = Array.from(sessionOwnerHandSpan.querySelectorAll("img.card"));
+			const sessionOwnerCards = await this.#invokeQueryCards(sessionOwnerHand.identity);
 
 			const cardSelectionIndices = [];
-			for (let cardIndex = 0; cardIndex < game.variant.playerCardCount; ++cardIndex) {
-				let cardViewer = cardIndex < cardImageViewers.length ? cardImageViewers[cardIndex] : null;
+			for (let cardIndex = 0; cardIndex < sessionOwnerCards.length; ++cardIndex) {
+				let cardViewer = sessionOwnerCardViewers[cardIndex];
 				if (cardViewer.classList.contains("selected")) {
 					cardSelectionIndices.push(cardIndex);
 					cardImageViewer.classList.remove("selected");
 				}
 			}
 
-			const playerCardIdentities = cardSelectionIndices.map(index => visibleCards[index].identity);
-			const exchango = await this.#invokeExchangeCards(sessionOwnerHand.identity, playerCardIdentities);
+			const playerCardIdentities = cardSelectionIndices.map(index => sessionOwnerCards[index].identity);
+			await this.#invokeExchangeCards(sessionOwnerHand.identity, playerCardIdentities);
 			await this.#displayGame();
 
 			this.messageOutput.value = "ok.";
