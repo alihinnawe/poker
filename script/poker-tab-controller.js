@@ -67,7 +67,8 @@ class PokerTabController extends TabController {
 	 */
 	async processActivated () {
 		this.messageOutput.value = "";
-
+		let a = 9;
+		console.log("convert number to string", typeof a,typeof a.toString());
 		// redefine center content
 		while (this.center.lastElementChild) this.center.lastElementChild.remove();
 		this.center.append(this.pokerTablesViewTemplate.content.firstElementChild.cloneNode(true));
@@ -495,7 +496,7 @@ class PokerTabController extends TabController {
 				let cardViewer = sessionOwnerCardViewers[cardIndex];
 				if (cardViewer.classList.contains("selected")) {
 					cardSelectionIndices.push(cardIndex);
-					cardImageViewer.classList.remove("selected");
+					cardViewer.classList.remove("selected");
 				}
 			}
 
